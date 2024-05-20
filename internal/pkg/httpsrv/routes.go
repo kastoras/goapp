@@ -2,37 +2,42 @@ package httpsrv
 
 import (
 	"fmt"
+	"goapp/internal/pkg/csrf"
 	"net/http"
 	"runtime/debug"
 )
 
 type Route struct {
-	Name    string
-	Method  string
-	Pattern string
-	HFunc   http.Handler
-	Queries []string
+	Name       string
+	Method     string
+	Pattern    string
+	HFunc      http.Handler
+	Queries    []string
+	Middleware func(http.Handler) http.Handler
 }
 
 func (s *Server) myRoutes() []Route {
 	return []Route{
 		{
-			Name:    "health",
-			Method:  "GET",
-			Pattern: "/goapp/health",
-			HFunc:   s.handlerWrapper(s.handlerHealth),
+			Name:       "health",
+			Method:     "GET",
+			Pattern:    "/goapp/health",
+			HFunc:      s.handlerWrapper(s.handlerHealth),
+			Middleware: nil,
 		},
 		{
-			Name:    "websocket",
-			Method:  "GET",
-			Pattern: "/goapp/ws",
-			HFunc:   s.handlerWrapper(s.handlerWebSocket),
+			Name:       "websocket",
+			Method:     "GET",
+			Pattern:    "/goapp/ws",
+			HFunc:      s.handlerWrapper(s.handlerWebSocket),
+			Middleware: csrf.CSRFCheckMiddleware,
 		},
 		{
-			Name:    "home",
-			Method:  "GET",
-			Pattern: "/goapp",
-			HFunc:   s.handlerWrapper(s.handlerHome),
+			Name:       "home",
+			Method:     "GET",
+			Pattern:    "/goapp",
+			HFunc:      s.handlerWrapper(s.handlerHome),
+			Middleware: nil,
 		},
 	}
 }

@@ -3,9 +3,28 @@ package httpsrv
 import (
 	"html/template"
 	"net/http"
+
+	csrfInternal "goapp/internal/pkg/csrf"
+
+	"github.com/gorilla/csrf"
 )
 
 func (s *Server) handlerHome(w http.ResponseWriter, r *http.Request) {
+
+	err := csrfInternal.SetSession(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data := struct {
+		WebSocketUrl string
+		CSRFToken    string
+	}{
+		WebSocketUrl: "ws://" + r.Host + "/goapp/ws",
+		CSRFToken:    csrf.Token(r),
+	}
+
 	template.Must(template.New("").Parse(`
 <!DOCTYPE html>
 <html>
@@ -16,6 +35,7 @@ window.addEventListener("load", function(evt) {
     var output = document.getElementById("output");
     var input = document.getElementById("input");
     var ws;
+    var csrfToken = "{{.CSRFToken}}";
     var print = function(message) {
         var d = document.createElement("div");
         d.textContent = message;
@@ -26,7 +46,7 @@ window.addEventListener("load", function(evt) {
         if (ws) {
             return false;
         }
-        ws = new WebSocket("{{.}}");
+        ws = new WebSocket("{{.WebSocketUrl}}?csrf_token=" + encodeURIComponent(csrfToken));
         ws.onopen = function(evt) {
             print("OPEN");
         }
@@ -78,5 +98,5 @@ You can change the message and send multiple times.
 </td></tr></table>
 </body>
 </html>
-`)).Execute(w, "ws://"+r.Host+"/goapp/ws")
+`)).Execute(w, data)
 }

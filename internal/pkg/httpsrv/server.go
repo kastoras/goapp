@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"goapp/internal/pkg/csrf"
 	"goapp/internal/pkg/watcher"
 
 	"github.com/gorilla/handlers"
@@ -36,18 +37,30 @@ func New(strChan <-chan string) *Server {
 	return &s
 }
 
+func addMidlewareToRoute(route Route) http.Handler {
+	handler := route.HFunc
+	if route.Middleware != nil {
+		handler = route.Middleware(handler)
+	}
+	return handler
+}
+
 func (s *Server) Start() error {
 	// Create router.
 	r := mux.NewRouter()
+	r = csrf.SetupCSRFMiddleware(r)
 
 	// Register routes.
 	for _, route := range s.myRoutes() {
+
+		handler := addMidlewareToRoute(route)
+
 		if route.Method == "ANY" {
-			r.Handle(route.Pattern, route.HFunc)
+			r.Handle(route.Pattern, handler)
 		} else {
-			r.Handle(route.Pattern, route.HFunc).Methods(route.Method)
+			r.Handle(route.Pattern, handler).Methods(route.Method)
 			if route.Queries != nil {
-				r.Handle(route.Pattern, route.HFunc).Methods(route.Method).Queries(route.Queries...)
+				r.Handle(route.Pattern, handler).Methods(route.Method).Queries(route.Queries...)
 			}
 		}
 	}

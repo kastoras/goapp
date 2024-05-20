@@ -24,7 +24,6 @@ The server prints statistics for each WS sessioned closed but it seems to only c
 
 A change needed in the for loop in order to access sessionstats directly
 
-
 ### #2
 
 A more then normal memory usage is observed after many WS sessions which needs investigation.
@@ -32,6 +31,24 @@ A more then normal memory usage is observed after many WS sessions which needs i
 ### #3
 
 A cross-site request forgery is reported by a security audit which needs fixing.
+
+### Solution 3
+
+The following solution has been implemented, in order for every new websocket connection that is tring to be established to be proteced for csrf attacks:
+
+A csrf package has been created. This package contains:
+- middleware
+    - **CSRFCheckMiddleware**, this middleware is used for all the routes that needs to be guarded from csrf attack
+    - **SetupCSRFMiddleware**, this setup the gorilla mux csrf middleware
+- session 
+    - **SetSession**, setups a csrf token for the current session
+    - **GetSession**, get the csrf token for the current session
+
+In the **Route struct** a Middleware attribute have been added. This is used by the routes that needed an extra middleware.
+
+In the **handlerHome** I have set a csrf token using the SetSession func. Then this token passed to the template and I set it like a query param when tring to open a new connection. 
+
+In the **websocket** route I have set the middleware attribute to **CSRFCheckMiddleware**. This way a new websocket connection can established only with the csrf token as a query param.
 
 ## New features
 
