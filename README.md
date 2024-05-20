@@ -20,6 +20,11 @@ The server prints statistics for each WS sessioned closed but it seems to only c
 2024/03/29 18:28:38 stats.go:11: session a938e316-8536-46e6-8633-bd309fbcf579 has received 1 messages
 ```
 
+### Solution 1
+
+A change needed in the for loop in order to access sessionstats directly
+
+
 ### #2
 
 A more then normal memory usage is observed after many WS sessions which needs investigation.
