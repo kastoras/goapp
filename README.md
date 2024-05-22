@@ -88,7 +88,7 @@ CLOSE
 
 ### Implementation for feature B
 
-Value added to Counter stuct
+Value added to Counter stuct. 
 
 ### C
 
@@ -105,3 +105,11 @@ $ ./bin/client -n 3
 [conn #2] iteration: 1, value: 66D53ED788
 ...
 ```
+
+### Implementation for feature C
+
+New command line app created.
+
+Build the app using this command `make client`
+
+Run the app using this command `./bin/client -connections=5`
