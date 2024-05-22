@@ -86,6 +86,10 @@ RESPONSE: {"iteration":3,"value":"05DCC3B6AB"}
 CLOSE
 ```
 
+### Implementation for feature B
+
+Value added to Counter stuct
+
 ### C
 
 Create a command line client as a separate application that opens a requested number of sessions simultaneously.

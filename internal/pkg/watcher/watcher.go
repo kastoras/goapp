@@ -35,7 +35,7 @@ func (w *Watcher) Start() error {
 		defer wg.Done()
 		for {
 			select {
-			case <-w.inCh:
+			case w.counter.Value = <-w.inCh:
 				w.counter.Iteration += 1
 				select {
 				case w.outCh <- w.counter:
