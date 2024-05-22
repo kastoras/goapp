@@ -56,6 +56,22 @@ In the **websocket** route I have set the middleware attribute to **CSRFCheckMid
 
 Modify the random string generator to generate only hex values and verify its accuracy and resource usage by creating a test and a benchmark run.
 
+### Implementation for feature A
+
+#### Generate Random Hex
+
+The RandString function has been modified to select only characters that are available in the hex system.
+
+Another solution could be to use an external package like `github.com/thanhpk/randstr` in order to generate a random hex.
+
+#### Test functionality
+
+This package `github.com/stretchr/testify/assert` added in order to create test assertions.
+
+Use this command `go test -v -cover "./pkg/util"` to run the functionality accuracy test & check code test coverage.
+
+Use this command `go test -bench=. "./pkg/util"` to run the benchmark test.
+
 ### B
 
 Extent the API to also return the Hex value in WS connection. I.e. a browser that open a connection to `localhost:8080` should see the HEX values.
